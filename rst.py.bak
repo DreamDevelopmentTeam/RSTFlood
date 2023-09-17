@@ -1,0 +1,25 @@
+from scapy.all import *
+from scapy.layers.inet import TCP, IP
+
+
+def send_tcp_rst_random_source(ip, port):
+    src_ip = RandIP()
+    src_port = RandShort()
+    tcp = TCP(sport=src_port, dport=port, flags="R", seq=0)
+    ip = IP(dst=ip, src=src_ip)
+    pkt = ip / tcp
+    send(pkt, verbose=False)
+
+def send_tcp_rst(source_ip, source_port, ip, port):
+    src_ip = source_ip
+    src_port = source_port
+    tcp = TCP(sport=src_port, dport=port, flags="R", seq=0)
+    ip = IP(dst=ip, src=src_ip)
+    pkt = ip / tcp
+    send(pkt, verbose=False)
+
+def get_random_IP():
+    return RandIP()
+
+def get_random_port():
+    return RandShort()
